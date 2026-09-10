@@ -66,6 +66,7 @@ export default function RegisterPage() {
                 autoComplete="tel"
               />
             </div>
+            <p className="hint" style={{ marginTop: -8, marginBottom: 16 }}><i className="fa-solid fa-circle-info"></i>Ketik 08... otomatis disimpan 628... Kalau sudah 62..., dibiarkan.</p>
             <div className="field">
               <span className="icon"><i className="fa-solid fa-user"></i></span>
               <input

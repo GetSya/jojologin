@@ -121,28 +121,48 @@ export default function DashboardPage() {
             </div>
           </div>
           <div className="row">
-            <button className="btn-ghost" onClick={() => router.push("/admin")}><i className="fa-solid fa-user-shield"></i> Panel Admin</button>
             <button className="btn-ghost" onClick={logout}><i className="fa-solid fa-right-from-bracket"></i> Logout</button>
           </div>
         </div>
 
         {msg.text && <div className={`alert ${msg.type}`} style={{ background: "#fff" }}>{msg.text}</div>}
 
+        {/* WAJIB ISI NOMOR: user login Google belum punya nomor WhatsApp.
+            Selama kosong, dashboard dikunci dan hanya form ini yang tampil. */}
+        {!user?.whatsapp ? (
+          <div className="cardbox" style={{ maxWidth: 560, margin: "0 auto", textAlign: "center" }}>
+            <div className="brand-badge" style={{ margin: "0 auto 12px" }}><i className="fa-brands fa-whatsapp"></i></div>
+            <h3>Satu langkah lagi</h3>
+            <p className="muted">Kamu login dengan Google yang tidak punya nomor telepon. Wajib isi nomor WhatsApp aktif untuk memakai JojoBot.</p>
+            <form onSubmit={saveWhatsapp} style={{ marginTop: 16, textAlign: "left" }}>
+              <div className="field">
+                <span className="icon"><i className="fa-brands fa-whatsapp"></i></span>
+                <input
+                  value={waInput}
+                  onChange={(e) => setWaInput(e.target.value)}
+                  placeholder="Nomor WhatsApp (cth: 081234567890)"
+                  inputMode="tel"
+                  autoComplete="tel"
+                />
+              </div>
+              <p className="hint"><i className="fa-solid fa-circle-info"></i>Ketik 08... otomatis disimpan 628... Kalau sudah ketik 62..., dibiarkan apa adanya.</p>
+              <button className="btn-primary" style={{ width: "100%" }} disabled={savingWa}>
+                <i className="fa-solid fa-floppy-disk"></i> {savingWa ? "Menyimpan..." : "Simpan Nomor"}
+              </button>
+            </form>
+          </div>
+        ) : (
         <div className="grid2">
           <div className="cardbox">
             <h3><i className="fa-solid fa-hand"></i> Selamat datang, {user?.username}!</h3>
-            {!user?.whatsapp && (
-              <div className="alert info" style={{ marginTop: 12 }}>
-                Akun Google-mu belum punya nomor WhatsApp. Isi dulu agar bisa lanjut ke JojoBot.
-              </div>
-            )}
+            <p className="muted">Nomor WhatsApp-mu: <span className="code">+{user?.whatsapp}</span></p>
             <form onSubmit={saveWhatsapp} style={{ marginTop: 12 }}>
               <div className="row">
                 <input
                   className="input"
                   value={waInput}
                   onChange={(e) => setWaInput(e.target.value)}
-                  placeholder="Nomor WhatsApp (cth: 081234567890)"
+                  placeholder="Ganti nomor WhatsApp"
                   inputMode="tel"
                   style={{ flex: 1 }}
                 />
@@ -150,6 +170,7 @@ export default function DashboardPage() {
                   <i className="fa-solid fa-floppy-disk"></i> {savingWa ? "Menyimpan..." : "Simpan"}
                 </button>
               </div>
+              <p className="hint"><i className="fa-solid fa-circle-info"></i>08... otomatis jadi 628...; 62... dibiarkan.</p>
             </form>
             <p className="muted">Akun kamu sudah aktif. Klik tombol di bawah untuk melanjutkan chat ke bot WhatsApp resmi kami.</p>
             <div style={{ marginTop: 18 }}>
@@ -176,6 +197,7 @@ export default function DashboardPage() {
             </div>
           </div>
         </div>
+        )}
         <p className="footer-note">JojoBot © 2026 • Login & Register dengan Next.js + JVault</p>
       </div>
     </div>

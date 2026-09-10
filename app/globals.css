@@ -1,11 +1,13 @@
 * { box-sizing: border-box; margin: 0; padding: 0; }
 html, body { height: 100%; }
 body {
-  font-family: 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
+  font-family: 'Plus Jakarta Sans', 'Segoe UI', system-ui, -apple-system, Roboto, 'Helvetica Neue', Arial, sans-serif;
   background: #e7e4f9;
   color: #1c1c28;
   min-height: 100vh;
 }
+.hint { font-size: 12.5px; color: #77779a; margin-top: 8px; }
+.hint i { color: #25D366; margin-right: 4px; }
 
 /* ===== Background panggung seperti gambar ===== */
 .stage {
