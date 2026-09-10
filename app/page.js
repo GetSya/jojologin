@@ -10,6 +10,26 @@ function LoginInner() {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState({ type: "", text: "" });
+  const [checking, setChecking] = useState(true);
+
+  // Sudah login? Langsung lempar ke dashboard/admin, jangan tampilkan form login lagi
+  useEffect(() => {
+    (async () => {
+      try {
+        const t = localStorage.getItem("jojo_token");
+        const res = await fetch("/api/auth/me", {
+          headers: t ? { Authorization: `Bearer ${t}` } : {},
+        });
+        if (res.ok) {
+          const data = await res.json();
+          localStorage.setItem("jojo_user", JSON.stringify(data.user));
+          router.replace(data.user?.role === "admin" ? "/admin" : "/dashboard");
+          return;
+        }
+      } catch {}
+      setChecking(false);
+    })();
+  }, [router]);
 
   // Menampilkan error dari callback Google (?error=...) tanpa membuat halaman dinamis
   function GoogleErrorNote() {
@@ -52,6 +72,27 @@ function LoginInner() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (checking) {
+    return (
+      <div className="stage">
+        <div className="blob-purple" />
+        <div className="blob-white" />
+        <div className="card">
+          <div className="panel-left" style={{ textAlign: "center" }}>
+            <div className="brand" style={{ justifyContent: "center" }}>
+              <div className="brand-badge"><i className="fa-solid fa-robot"></i></div>
+              <div className="brand-name">Jojo<span>Bot</span></div>
+            </div>
+            <p className="muted"><i className="fa-solid fa-circle-notch fa-spin"></i> Memeriksa sesi...</p>
+          </div>
+          <div className="panel-right">
+            <div className="glass"><div className="glass-fallback" style={{ display: "flex" }}><div className="big"><i className="fa-brands fa-whatsapp"></i></div></div></div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (

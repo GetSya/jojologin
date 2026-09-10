@@ -1,6 +1,6 @@
 "use client";
 import Link from "next/link";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
 export default function RegisterPage() {
@@ -11,6 +11,26 @@ export default function RegisterPage() {
   const [show, setShow] = useState(false);
   const [loading, setLoading] = useState(false);
   const [msg, setMsg] = useState({ type: "", text: "" });
+  const [checking, setChecking] = useState(true);
+
+  // Sudah login? Langsung lempar ke dashboard/admin, jangan tampilkan form register lagi
+  useEffect(() => {
+    (async () => {
+      try {
+        const t = localStorage.getItem("jojo_token");
+        const res = await fetch("/api/auth/me", {
+          headers: t ? { Authorization: `Bearer ${t}` } : {},
+        });
+        if (res.ok) {
+          const data = await res.json();
+          localStorage.setItem("jojo_user", JSON.stringify(data.user));
+          router.replace(data.user?.role === "admin" ? "/admin" : "/dashboard");
+          return;
+        }
+      } catch {}
+      setChecking(false);
+    })();
+  }, [router]);
 
   async function handleRegister(e) {
     e.preventDefault();
@@ -38,6 +58,27 @@ export default function RegisterPage() {
     } finally {
       setLoading(false);
     }
+  }
+
+  if (checking) {
+    return (
+      <div className="stage">
+        <div className="blob-purple" />
+        <div className="blob-white" />
+        <div className="card">
+          <div className="panel-left" style={{ textAlign: "center" }}>
+            <div className="brand" style={{ justifyContent: "center" }}>
+              <div className="brand-badge"><i className="fa-solid fa-robot"></i></div>
+              <div className="brand-name">Jojo<span>Bot</span></div>
+            </div>
+            <p className="muted"><i className="fa-solid fa-circle-notch fa-spin"></i> Memeriksa sesi...</p>
+          </div>
+          <div className="panel-right">
+            <div className="glass"><div className="glass-fallback" style={{ display: "flex" }}><div className="big"><i className="fa-solid fa-mobile-screen-button"></i></div></div></div>
+          </div>
+        </div>
+      </div>
+    );
   }
 
   return (
