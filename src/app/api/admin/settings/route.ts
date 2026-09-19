@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import { verifyAdminToken, getCookieName } from "@/lib/auth";
 import { getJVaultData, saveJVaultData } from "@/lib/jvault";
-import { normalizePhone, isValidPhone, sanitizeText } from "@/lib/validation";
+import { normalizePhone, isValidPhone, sanitizeText, normalizeDomain, isValidDomain } from "@/lib/validation";
 
 async function isAuthorized(req: NextRequest): Promise<boolean> {
   const token = req.cookies.get(getCookieName())?.value;
@@ -38,18 +38,24 @@ export async function PUT(req: NextRequest) {
   const rawPhone = typeof b.botPhone === "string" ? b.botPhone : "";
   const rawButtonText = typeof b.whatsappButtonText === "string" ? b.whatsappButtonText : "";
   const rawMessage = typeof b.whatsappMessage === "string" ? b.whatsappMessage : "";
+  const rawDomain = typeof b.domain === "string" ? b.domain : "";
 
-  if (!rawPhone || !rawButtonText || !rawMessage) {
+  if (!rawPhone || !rawButtonText || !rawMessage || !rawDomain) {
     return NextResponse.json({ error: "Semua field wajib diisi." }, { status: 400 });
   }
 
-  if (rawPhone.length > 30 || rawButtonText.length > 100 || rawMessage.length > 500) {
+  if (rawPhone.length > 30 || rawButtonText.length > 100 || rawMessage.length > 500 || rawDomain.length > 100) {
     return NextResponse.json({ error: "Input terlalu panjang." }, { status: 400 });
   }
 
   const normalizedPhone = normalizePhone(rawPhone);
   if (!isValidPhone(normalizedPhone)) {
     return NextResponse.json({ error: "Nomor bot tidak valid. Gunakan 628xxxxxxxxxx." }, { status: 400 });
+  }
+
+  const normalizedDomain = normalizeDomain(rawDomain);
+  if (!isValidDomain(normalizedDomain)) {
+    return NextResponse.json({ error: "Domain tidak valid. Contoh: bot.acamedia.xyz" }, { status: 400 });
   }
 
   const sanitizedButton = sanitizeText(rawButtonText, 100);
@@ -67,6 +73,7 @@ export async function PUT(req: NextRequest) {
         botPhone: normalizedPhone,
         whatsappButtonText: sanitizedButton,
         whatsappMessage: sanitizedMessage,
+        domain: normalizedDomain,
       },
     };
     await saveJVaultData(newData);

@@ -89,6 +89,7 @@ function normalizeData(raw: unknown): JVaultData {
         typeof c.whatsappButtonText === "string" ? c.whatsappButtonText : DEFAULT_CONFIG.whatsappButtonText,
       whatsappMessage:
         typeof c.whatsappMessage === "string" ? c.whatsappMessage : DEFAULT_CONFIG.whatsappMessage,
+      domain: typeof c.domain === "string" && c.domain ? c.domain : DEFAULT_CONFIG.domain,
     };
   }
 
@@ -97,6 +98,7 @@ function normalizeData(raw: unknown): JVaultData {
     if (typeof candidate.botPhone === "string") config.botPhone = candidate.botPhone as string;
     if (typeof candidate.whatsappButtonText === "string") config.whatsappButtonText = candidate.whatsappButtonText as string;
     if (typeof candidate.whatsappMessage === "string") config.whatsappMessage = candidate.whatsappMessage as string;
+    if (typeof candidate.domain === "string") config.domain = candidate.domain as string;
   }
 
   // Filter users to valid shape
@@ -180,6 +182,7 @@ export async function updateConfig(partial: Partial<BotConfig>): Promise<BotConf
     botPhone: partial.botPhone ?? data.config.botPhone,
     whatsappButtonText: partial.whatsappButtonText ?? data.config.whatsappButtonText,
     whatsappMessage: partial.whatsappMessage ?? data.config.whatsappMessage,
+    domain: partial.domain ?? data.config.domain,
   };
   const newData: JVaultData = { users: data.users, config: newConfig };
   await saveJVaultData(newData);

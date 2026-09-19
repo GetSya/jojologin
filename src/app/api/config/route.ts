@@ -14,6 +14,7 @@ export async function GET() {
     return NextResponse.json({
       botPhone: data.config.botPhone,
       whatsappButtonText: data.config.whatsappButtonText,
+      domain: data.config.domain,
       waLink,
     });
   } catch (e) {

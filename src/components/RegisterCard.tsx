@@ -19,6 +19,7 @@ export default function RegisterCard({ initialNomor }: { initialNomor: string | 
   const [errorMsg, setErrorMsg] = useState("");
   const [copied, setCopied] = useState(false);
   const [configLoaded, setConfigLoaded] = useState(false);
+  const [domain, setDomain] = useState("bot.acamedia.xyz");
 
   // Load public config for WA button even before register (to show preview)
   useEffect(() => {
@@ -27,6 +28,7 @@ export default function RegisterCard({ initialNomor }: { initialNomor: string | 
       .then((d) => {
         if (d.whatsappButtonText) setButtonText(d.whatsappButtonText);
         if (d.waLink) setWaLink(d.waLink);
+        if (d.domain) setDomain(d.domain);
         setConfigLoaded(true);
       })
       .catch(() => setConfigLoaded(true));
@@ -98,7 +100,7 @@ export default function RegisterCard({ initialNomor }: { initialNomor: string | 
         <div className="mt-6 rounded-2xl bg-zinc-50 p-4 ring-1 ring-zinc-200">
           <p className="text-sm font-medium text-zinc-700">Contoh link valid:</p>
           <code className="mt-1.5 block break-all rounded-xl bg-white px-3 py-2.5 font-mono text-[12.5px] text-zinc-600 ring-1 ring-zinc-200">
-            https://bot.acamedia.xyz?nomor=6288213292687
+            https://{domain}?nomor=6288213292687
           </code>
         </div>
         <p className="mt-6 text-center text-xs leading-5 text-zinc-400">

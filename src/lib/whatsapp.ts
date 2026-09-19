@@ -22,6 +22,7 @@ export const DEFAULT_CONFIG = {
   botPhone: "6281234567890",
   whatsappButtonText: "Lanjutkan ke WhatsApp",
   whatsappMessage: "Halo, saya sudah melakukan registrasi bot.",
+  domain: "bot.acamedia.xyz",
 };
 
 export type BotConfig = typeof DEFAULT_CONFIG;

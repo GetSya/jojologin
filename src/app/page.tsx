@@ -1,8 +1,16 @@
 import RegisterCard from "@/components/RegisterCard";
+import { getConfig } from "@/lib/jvault";
 
 export default async function Home({ searchParams }: PageProps<"/">) {
   const params = await searchParams;
   const nomor = typeof params?.nomor === "string" ? params.nomor : null;
+  let displayDomain = "acamedia.bot";
+  try {
+    const cfg = await getConfig();
+    if (cfg.domain) displayDomain = cfg.domain;
+  } catch {
+    // fallback
+  }
 
   return (
     <div className="relative flex min-h-screen flex-col overflow-hidden bg-[#fcfcf9]">
@@ -21,7 +29,7 @@ export default async function Home({ searchParams }: PageProps<"/">) {
             <span className="text-[15px] font-bold tracking-tight">◎</span>
           </div>
           <div>
-            <p className="text-[15px] font-semibold tracking-tight text-zinc-900">acamedia.bot</p>
+            <p className="text-[15px] font-semibold tracking-tight text-zinc-900">{displayDomain}</p>
             <p className="hidden text-xs font-medium text-zinc-500 sm:block">WhatsApp Bot Registry</p>
           </div>
         </div>

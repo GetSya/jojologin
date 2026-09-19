@@ -1,7 +1,7 @@
 "use client";
 import { useEffect, useState } from "react";
 import { motion } from "framer-motion";
-import { Save, Loader2, LogOut, CheckCircle2, Settings2, MessageCircle, Phone, Type } from "lucide-react";
+import { Save, Loader2, LogOut, CheckCircle2, Settings2, MessageCircle, Phone, Type, Globe } from "lucide-react";
 import { pushToast } from "./Toast";
 import { useRouter } from "next/navigation";
 
@@ -12,6 +12,7 @@ export default function AdminDashboard() {
   const [botPhone, setBotPhone] = useState("");
   const [buttonText, setButtonText] = useState("");
   const [message, setMessage] = useState("");
+  const [domain, setDomain] = useState("");
   useEffect(() => {
     fetch("/api/admin/settings")
       .then((r) => {
@@ -22,6 +23,7 @@ export default function AdminDashboard() {
         setBotPhone(d.config.botPhone);
         setButtonText(d.config.whatsappButtonText);
         setMessage(d.config.whatsappMessage);
+        setDomain(d.config.domain ?? "bot.acamedia.xyz");
       })
       .catch(() => {
         pushToast({ type: "error", message: "Gagal memuat pengaturan." });
@@ -39,8 +41,13 @@ export default function AdminDashboard() {
     }
   })();
 
+  const domainPreview = (() => {
+    const d = domain?.trim() ? domain.trim().replace(/^https?:\/\//, "").split("/")[0] : "bot.acamedia.xyz";
+    return `https://${d}?nomor=6288213292687`;
+  })();
+
   const handleSave = async () => {
-    if (!botPhone || !buttonText || !message) {
+    if (!botPhone || !buttonText || !message || !domain) {
       pushToast({ type: "error", message: "Semua field wajib diisi." });
       return;
     }
@@ -49,7 +56,7 @@ export default function AdminDashboard() {
       const res = await fetch("/api/admin/settings", {
         method: "PUT",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ botPhone, whatsappButtonText: buttonText, whatsappMessage: message }),
+        body: JSON.stringify({ botPhone, whatsappButtonText: buttonText, whatsappMessage: message, domain }),
       });
       const data = await res.json();
       if (!res.ok) {
@@ -116,6 +123,22 @@ export default function AdminDashboard() {
             <div className="mt-6 space-y-5">
               <div>
                 <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-700">
+                  <Globe className="h-3.5 w-3.5 text-zinc-400" /> Domain Website
+                </label>
+                <div className="mt-2 flex items-center gap-2">
+                  <span className="hidden shrink-0 rounded-xl bg-zinc-100 px-3 py-3 text-xs font-medium text-zinc-500 ring-1 ring-zinc-200 sm:inline">https://</span>
+                  <input
+                    value={domain}
+                    onChange={(e) => setDomain(e.target.value)}
+                    placeholder="bot.acamedia.xyz"
+                    className="w-full flex-1 rounded-2xl border border-zinc-200 bg-zinc-50 px-4 py-3 font-mono text-sm focus:border-zinc-900 focus:bg-white focus:outline-none focus:ring-4 focus:ring-zinc-900/10"
+                  />
+                </div>
+                <p className="mt-1.5 text-xs text-zinc-500">Domain tanpa https://, contoh: bot.acamedia.xyz — dipakai untuk preview link registrasi</p>
+              </div>
+
+              <div>
+                <label className="flex items-center gap-1.5 text-sm font-medium text-zinc-700">
                   <Phone className="h-3.5 w-3.5 text-zinc-400" /> Nomor Bot
                 </label>
                 <input
@@ -166,13 +189,22 @@ export default function AdminDashboard() {
             </button>
 
             {/* Preview */}
-            <div className="mt-8 rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
-              <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Preview Link WhatsApp</p>
-              <code className="mt-2 block break-all rounded-xl bg-white px-3 py-2.5 font-mono text-xs leading-5 text-zinc-600 ring-1 ring-zinc-200">
-                {previewLink || "-"}
-              </code>
-              <div className="mt-3 flex items-center gap-2 text-xs text-zinc-500">
-                <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> Link divalidasi hanya ke https://wa.me/
+            <div className="mt-8 space-y-3 rounded-2xl border border-zinc-200 bg-zinc-50 p-4">
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Preview Link Registrasi</p>
+                <code className="mt-2 block break-all rounded-xl bg-white px-3 py-2.5 font-mono text-xs leading-5 text-zinc-600 ring-1 ring-zinc-200">
+                  {domainPreview}
+                </code>
+                <p className="mt-1.5 text-xs text-zinc-500">Link ini yang dibagikan ke user (ganti nomor di akhir)</p>
+              </div>
+              <div>
+                <p className="text-xs font-semibold uppercase tracking-widest text-zinc-500">Preview Link WhatsApp</p>
+                <code className="mt-2 block break-all rounded-xl bg-white px-3 py-2.5 font-mono text-xs leading-5 text-zinc-600 ring-1 ring-zinc-200">
+                  {previewLink || "-"}
+                </code>
+                <div className="mt-2 flex items-center gap-2 text-xs text-zinc-500">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-emerald-500" /> Link divalidasi hanya ke https://wa.me/
+                </div>
               </div>
             </div>
 

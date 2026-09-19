@@ -86,3 +86,34 @@ export function formatDisplayPhone(canonicalOrMasked: string): string {
 export function sanitizeText(input: string, maxLen = 500): string {
   return String(input).trim().slice(0, maxLen).replace(/[<>"'`]/g, "");
 }
+
+export function normalizeDomain(input: string): string {
+  let s = String(input).trim().toLowerCase();
+  // Remove protocol
+  s = s.replace(/^https?:\/\//, "");
+  // Remove path, query, hash
+  s = s.split("/")[0].split("?")[0].split("#")[0];
+  // Remove port if present but keep domain
+  // Remove trailing dot
+  s = s.replace(/\.$/, "");
+  return s;
+}
+
+export function isValidDomain(domain: string): boolean {
+  if (!domain || domain.length > 253) return false;
+  if (domain.length < 3) return false;
+  // Must not contain spaces or invalid chars
+  if (/[^a-z0-9.-]/i.test(domain)) return false;
+  // Must contain at least one dot
+  if (!domain.includes(".")) return false;
+  // Each label 1-63 chars, not start/end with hyphen
+  const labels = domain.split(".");
+  if (labels.some((l) => l.length === 0 || l.length > 63)) return false;
+  if (labels.some((l) => l.startsWith("-") || l.endsWith("-"))) return false;
+  // TLD at least 2 chars and only letters
+  const tld = labels[labels.length - 1];
+  if (!/^[a-z]{2,}$/i.test(tld)) return false;
+  // No consecutive dots or hyphens already handled
+  if (domain.includes("..")) return false;
+  return true;
+}
