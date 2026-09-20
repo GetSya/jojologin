@@ -90,6 +90,8 @@ function normalizeData(raw: unknown): JVaultData {
       whatsappMessage:
         typeof c.whatsappMessage === "string" ? c.whatsappMessage : DEFAULT_CONFIG.whatsappMessage,
       domain: typeof c.domain === "string" && c.domain ? c.domain : DEFAULT_CONFIG.domain,
+      qrisTemplate: typeof c.qrisTemplate === "string" && c.qrisTemplate ? c.qrisTemplate : DEFAULT_CONFIG.qrisTemplate,
+      payhookToken: typeof c.payhookToken === "string" ? c.payhookToken : DEFAULT_CONFIG.payhookToken,
     };
   }
 
@@ -99,6 +101,8 @@ function normalizeData(raw: unknown): JVaultData {
     if (typeof candidate.whatsappButtonText === "string") config.whatsappButtonText = candidate.whatsappButtonText as string;
     if (typeof candidate.whatsappMessage === "string") config.whatsappMessage = candidate.whatsappMessage as string;
     if (typeof candidate.domain === "string") config.domain = candidate.domain as string;
+    if (typeof candidate.qrisTemplate === "string") config.qrisTemplate = candidate.qrisTemplate as string;
+    if (typeof candidate.payhookToken === "string") config.payhookToken = candidate.payhookToken as string;
   }
 
   // Filter users to valid shape
@@ -183,6 +187,8 @@ export async function updateConfig(partial: Partial<BotConfig>): Promise<BotConf
     whatsappButtonText: partial.whatsappButtonText ?? data.config.whatsappButtonText,
     whatsappMessage: partial.whatsappMessage ?? data.config.whatsappMessage,
     domain: partial.domain ?? data.config.domain,
+    qrisTemplate: partial.qrisTemplate ?? data.config.qrisTemplate,
+    payhookToken: partial.payhookToken ?? data.config.payhookToken,
   };
   const newData: JVaultData = { users: data.users, config: newConfig };
   await saveJVaultData(newData);

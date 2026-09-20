@@ -39,9 +39,11 @@ export async function PUT(req: NextRequest) {
   const rawButtonText = typeof b.whatsappButtonText === "string" ? b.whatsappButtonText : "";
   const rawMessage = typeof b.whatsappMessage === "string" ? b.whatsappMessage : "";
   const rawDomain = typeof b.domain === "string" ? b.domain : "";
+  const rawQrisTemplate = typeof b.qrisTemplate === "string" ? b.qrisTemplate : undefined;
+  const rawPayhookToken = typeof b.payhookToken === "string" ? b.payhookToken : undefined;
 
   if (!rawPhone || !rawButtonText || !rawMessage || !rawDomain) {
-    return NextResponse.json({ error: "Semua field wajib diisi." }, { status: 400 });
+    return NextResponse.json({ error: "Field utama wajib diisi." }, { status: 400 });
   }
 
   if (rawPhone.length > 30 || rawButtonText.length > 100 || rawMessage.length > 500 || rawDomain.length > 100) {
@@ -55,7 +57,7 @@ export async function PUT(req: NextRequest) {
 
   const normalizedDomain = normalizeDomain(rawDomain);
   if (!isValidDomain(normalizedDomain)) {
-    return NextResponse.json({ error: "Domain tidak valid. Contoh: bot.acamedia.xyz" }, { status: 400 });
+    return NextResponse.json({ error: "Domain tidak valid. Contoh: bot.arasyarafi.xyz" }, { status: 400 });
   }
 
   const sanitizedButton = sanitizeText(rawButtonText, 100);
@@ -74,6 +76,8 @@ export async function PUT(req: NextRequest) {
         whatsappButtonText: sanitizedButton,
         whatsappMessage: sanitizedMessage,
         domain: normalizedDomain,
+        qrisTemplate: rawQrisTemplate ?? data.config.qrisTemplate,
+        payhookToken: rawPayhookToken ?? data.config.payhookToken,
       },
     };
     await saveJVaultData(newData);
