@@ -29,7 +29,7 @@ export const DEFAULT_PAYHOOK_SETTINGS: PayHookSettings = {
   qrisTemplate:
     "00020101021126570011ID.DANA.WWW011893600915390930088102099093008810303UMI51440014ID.CO.QRIS.WWW0215ID10254040171760303UMI5204737253033605802ID5908Jojo Bot6010Kab. Bogor610516340630425A2",
   apiUrl: "https://api-mininxd.vercel.app/qris",
-  secretToken: "",
+  secretToken: "akuacapkali",
 };
 
 // In-memory transaction store for quick serverless lookup & active state
